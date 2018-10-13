@@ -1,5 +1,9 @@
+version := "0.1"
+scalaVersion := "2.12.7"
 name := "celaeno-fragments"
 
-version := "0.1"
+resolvers += Resolver.sonatypeRepo("releases")
 
-scalaVersion := "2.12.7"
+libraryDependencies ++= Seq(
+  "com.danielasfregola" %% "twitter4s" % "5.5"
+)
