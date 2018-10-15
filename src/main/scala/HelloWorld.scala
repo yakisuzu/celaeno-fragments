@@ -10,9 +10,15 @@ object HelloWorld extends App {
   scala.util.Properties.envOrElse("TWITTER_ACCESS_TOKEN_SECRET", "fuck")
 
   val restClient = TwitterRestClient()
+  val woeId = 23424856
 
-  restClient.homeTimeline().map{ ratedData =>
-    val tweets = ratedData.data
-    tweets.foreach(tweet => println(tweet.text))
+//  restClient.homeTimeline().map{ ratedData =>
+//    val tweets = ratedData.data
+//    tweets.foreach(tweet => println(tweet.text))
+//  }
+
+  restClient.trends(woeId).map{ ratedData =>
+    val trends = ratedData.data
+    trends.foreach(trend => println(trend.trends))
   }
 }
