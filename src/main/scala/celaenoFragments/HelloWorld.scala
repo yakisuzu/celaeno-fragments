@@ -1,3 +1,5 @@
+package celaenoFragments
+
 import com.danielasfregola.twitter4s.entities.{
   LocationTrends,
   RateLimit,
