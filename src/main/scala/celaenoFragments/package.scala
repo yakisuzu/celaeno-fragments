@@ -1,15 +1,10 @@
-import com.danielasfregola.twitter4s.entities.{
-  LocationTrends,
-  RateLimit,
-  RatedData,
-  Trend
-}
+import com.danielasfregola.twitter4s.entities.{LocationTrends, RateLimit, RatedData, Trend}
 
 import scala.concurrent.{Future, Promise}
 
 package object celaenoFragments {
   def trendsMock(
-    trendNames: Seq[String]
+      trendNames: Seq[String]
   ): Future[RatedData[Seq[LocationTrends]]] = {
     val p = Promise[RatedData[Seq[LocationTrends]]]
     p.success(

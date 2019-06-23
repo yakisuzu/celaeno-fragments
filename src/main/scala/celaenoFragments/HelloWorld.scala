@@ -33,5 +33,5 @@ object HelloWorld extends App {
   trends.map { ratedData =>
     val trends = ratedData.data
     trends.foreach(trend => println(trend.trends))
-  }
+  }(global)
 }
