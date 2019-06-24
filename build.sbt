@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
   "com.danielasfregola" %% "twitter4s" % "6.1"
 )
 
-assemblyOutputPath in assembly := file(s"ops/${name.value}.jar")
+assemblyOutputPath in assembly := file(s"ops/app/${name.value}.jar")
 
 // https://docs.scala-lang.org/overviews/compiler-options/index.html
 scalacOptions ++= Seq(
