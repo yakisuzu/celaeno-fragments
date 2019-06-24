@@ -5,7 +5,15 @@ name := "celaeno-fragments"
 resolvers += Resolver.sonatypeRepo("releases")
 
 libraryDependencies ++= Seq(
-  "com.danielasfregola" %% "twitter4s" % "6.1"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "com.danielasfregola"        %% "twitter4s"     % "6.1"
+)
+
+libraryDependencies ++= Seq(
+  "ch.qos.logback"   % "logback-classic" % "1.2.3",
+  "com.typesafe"     % "config"          % "1.3.4",
+  "com.ullink.slack" % "simpleslackapi"  % "1.2.0",
+  "org.scalatest"    % "scalatest_2.12"  % "3.0.5" % "test"
 )
 
 assemblyOutputPath in assembly := file(s"ops/app/${name.value}.jar")
