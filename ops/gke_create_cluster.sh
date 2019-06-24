@@ -21,7 +21,6 @@ gcloud config set compute/region ${CLOUDSDK_COMPUTE_REGION}
 gcloud config set container/cluster ${CLUSTER_NAME}
 echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
 gcloud config configurations list
-gcloud auth configure-docker --quiet
 
 echo "コメントアウトして使う" && exit 0
 
