@@ -1,31 +1,34 @@
-#!/bin/bash
-CLUSTER_NAME="$1"
-PROJECT_ID="$2"
-GCLOUD_SERVICE_KEY_ENCODED="$3" # cat xxxxxxx.json | base64 -w 0
-[ "${CLUSTER_NAME}" == "" ] && echo "Require. CLUSTER_NAME" && exit 1
-[ "${PROJECT_ID}" == "" ] && echo "Require. PROJECT_ID" && exit 1
-[ "${GCLOUD_SERVICE_KEY_ENCODED}" == "" ] && echo "Require. GCLOUD_SERVICE_KEY_ENCODED" && exit 1
+#!/bin/sh
+pushd $(dirname `greadlink -f $0`) > /dev/null
 
+PROJECT_ID="$1"
 CLOUDSDK_COMPUTE_ZONE="asia-southeast1-a"
 CLOUDSDK_COMPUTE_REGION="asia-southeast1"
+CLUSTER_NAME="$2"
+[ "${PROJECT_ID}" == "" ] && echo "Require. PROJECT_ID" && popd > /dev/null && exit 1
+[ "${CLUSTER_NAME}" == "" ] && echo "Require. CLUSTER_NAME" && popd > /dev/null && exit 1
+
 CLUSTER_VERSION="1.13.6-gke.13"
 MACHINE_TYPE="g1-small"
 NUM_NODES=1
 
-# gcloud setup
-gcloud config configurations create ${PROJECT_ID} 2> /dev/null
-gcloud config configurations activate ${PROJECT_ID}
-gcloud config set project ${PROJECT_ID}
-gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
-gcloud config set compute/region ${CLOUDSDK_COMPUTE_REGION}
-gcloud config set container/cluster ${CLUSTER_NAME}
-echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
+# clusterは超権限でつくる
+. ./gke_config_setup.sh ${PROJECT_ID} ${CLOUDSDK_COMPUTE_ZONE} ${CLOUDSDK_COMPUTE_REGION} ${CLUSTER_NAME}
+gcloud auth login
 gcloud config configurations list
 
-echo "コメントアウトして使う" && exit 0
+echo "コメントアウトして使う" && popd > /dev/null && exit 0
+
+# kubectl setup
+# gcloud container clusters get-credentials ${CLUSTER_NAME}
+
+# local gcr credential setup
+# gcloud components install docker-credential-gcr --quiet
+# docker-credential-gcr configure-docker
+# https://cloud.google.com/container-registry/docs/access-control
 
 # disable cluster
-#gcloud container clusters resize "${CLUSTER_NAME}" --size=0 --quiet && exit 0
+#gcloud container clusters resize "${CLUSTER_NAME}" --size=0 --quiet && popd > /dev/null && exit 0
 
 # create cluster
 gcloud config set container/new_scopes_behavior true
@@ -44,9 +47,10 @@ gcloud container clusters create "${CLUSTER_NAME}" \
   --enable-ip-alias \
   --network "projects/${PROJECT_ID}/global/networks/default" \
   --subnetwork "projects/${PROJECT_ID}/regions/${CLOUDSDK_COMPUTE_REGION}/subnetworks/default" \
-  --default-max-pods-per-node "110" \
+  --max-nodes-per-pool "100" \
   --addons HorizontalPodAutoscaling,HttpLoadBalancing \
   --no-issue-client-certificate \
   --enable-autoupgrade \
   --enable-autorepair
 
+popd > /dev/null
