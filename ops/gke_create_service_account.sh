@@ -27,6 +27,8 @@ gcloud iam service-accounts create ${IAM_NAME} --display-name=${IAM_NAME} 2>&1
 #gcloud iam service-accounts set-iam-policy \
 #  ${IAM_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \
 #  ./gke_create_service_account_${IAM_NAME}.json
+#gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+#   --member user:${IAM_NAME}@${PROJECT_ID}.iam.gserviceaccount.com --role roles/editor
 
 # iam app
 
