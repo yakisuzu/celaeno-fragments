@@ -46,8 +46,6 @@ jobs:
             echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
             gcloud config configurations list
             gcloud auth configure-docker --quiet
-            gcloud components install docker-credential-gcr
-            docker-credential-gcr configure-docker
       - run:
           name: docker build
           command: docker build -t asia.gcr.io/${PROJECT_ID}/${APP_NAME}:latest ops/app
