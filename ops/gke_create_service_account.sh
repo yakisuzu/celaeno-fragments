@@ -13,23 +13,36 @@ CLUSTER_NAME="$2"
 gcloud auth login
 gcloud config configurations list
 
+# プロジェクトのポリシー一覧
+# gcloud projects get-iam-policy ${PROJECT_ID}
+
 # リソースに付与できるロール一覧
-gcloud iam roles list
+# gcloud iam roles list
 
-# ポリシーのあてかた
-# https://cloud.google.com/iam/docs/managing-policies
+# ロールのあてかた
+# https://cloud.google.com/iam/docs/granting-roles-to-service-accounts?hl=ja
 
-# iam create deploy
-IAM_NAME="deploy"
-gcloud iam service-accounts create ${IAM_NAME} --display-name=${IAM_NAME} 2>&1
+# iam create circleci
+IAM_NAME_CIRCLECI="circleci"
+SERVICE_ACCOUNT_NAME_CIRCLECI=${IAM_NAME_CIRCLECI}@${PROJECT_ID}.iam.gserviceaccount.com
+gcloud iam service-accounts create ${IAM_NAME_CIRCLECI} --display-name=${IAM_NAME_CIRCLECI} 2>&1
 
-# iam set policy
-#gcloud iam service-accounts set-iam-policy \
-#  ${IAM_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \
-#  ./gke_create_service_account_${IAM_NAME}.json
-#gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-#   --member user:${IAM_NAME}@${PROJECT_ID}.iam.gserviceaccount.com --role roles/editor
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+   --member serviceAccount:${SERVICE_ACCOUNT_NAME_CIRCLECI} \
+   --role roles/storage.admin
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+   --member serviceAccount:${SERVICE_ACCOUNT_NAME_CIRCLECI} \
+   --role roles/container.clusterAdmin
 
-# iam app
+# TODO 違うかも
+# gcloud iam service-accounts get-iam-policy ${SERVICE_ACCOUNT_NAME_CIRCLECI}
+
+# TODO 必要になったら
+# iam create application
+#IAM_NAME_APP="application"
+#SERVICE_ACCOUNT_NAME_APP=${IAM_NAME_APP}@${PROJECT_ID}.iam.gserviceaccount.com
+#gcloud iam service-accounts create ${IAM_NAME_APP} --display-name=${IAM_NAME_APP} 2>&1
+
+#gcloud iam service-accounts get-iam-policy ${SERVICE_ACCOUNT_NAME_APP}
 
 popd > /dev/null
