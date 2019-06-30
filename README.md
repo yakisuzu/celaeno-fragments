@@ -19,3 +19,42 @@
   - google
   - デプロイまわり（ciでやるからたぶんいい）
   - slack
+
+# devメモ
+## build
+sbt update clean scalafmt test assembly
+
+## gcloud reference
+https://cloud.google.com/sdk/gcloud/reference/
+
+## gcloud active
+gcloud config configurations activate celaeno-fragments
+gcloud config configurations list
+
+## gcloud auth
+echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
+
+## docker-credential check
+cat ~/.docker/config.json
+
+## docker-credential-gcloud
+gcloud auth configure-docker --quiet
+echo "https://asia.gcr.io" | docker-credential-gcloud get
+
+## docker-credential-gcr
+https://cloud.google.com/container-registry/docs/access-control
+gcloud components install docker-credential-gcr --quiet
+docker-credential-gcr configure-docker
+docker-credential-gcr gcr-login
+echo "https://asia.gcr.io" | docker-credential-gcr get
+
+## kubectl setup
+gcloud container clusters get-credentials ${CLUSTER_NAME}
+
+
+## check
+docker pull asia.gcr.io/${PROJECT_ID}/${APP_NAME}:latest
+k delete -f ops/k8s/deployment.yaml \
+  && k apply -f ops/k8s/deployment.yaml \
+  && sleep 5 \
+  && k describe pod
