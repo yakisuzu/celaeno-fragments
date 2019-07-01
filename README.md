@@ -29,11 +29,11 @@ sbt update clean scalafmt test assembly
 https://cloud.google.com/sdk/gcloud/reference/
 
 ## gcloud active
-gcloud config configurations activate celaeno-fragments
+gcloud config configurations activate ${PROJECT_ID}
 gcloud config configurations list
 
 ## gcloud auth
-echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
+echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 -di | gcloud auth activate-service-account --key-file=-
 
 ## docker-credential check
 cat ~/.docker/config.json
@@ -54,12 +54,15 @@ docker pull asia.gcr.io/${PROJECT_ID}/${APP_NAME}:latest
 
 ## kubectl setup
 gcloud container clusters get-credentials ${CLUSTER_NAME}
+kubectl config use-context docker-for-desktop
+kubectl config use-context ${PROJECT_ID}
 
 ## kubernetes credential
 https://kubernetes.io/docs/concepts/containers/images/#referring-to-an-imagepullsecrets-on-a-pod
 https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
 https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/
 https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters
+https://cloud.google.com/container-registry/docs/advanced-authentication
 
 ## kubernetes deploy
 k delete -f ops/k8s/deployment.yaml \
