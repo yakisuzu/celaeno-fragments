@@ -64,6 +64,11 @@ https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/
 https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters
 https://cloud.google.com/container-registry/docs/advanced-authentication
 
+## kubernetes customize
+https://blog.stack-labs.com/code/kustomize-101/
+https://github.com/kubernetes-sigs/kustomize
+https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+
 ## kubernetes deploy
 k delete -f ops/k8s/deployment.yaml \
   && k apply -f ops/k8s/deployment.yaml \
