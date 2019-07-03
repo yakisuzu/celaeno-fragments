@@ -33,9 +33,9 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
    --member serviceAccount:${SERVICE_ACCOUNT_NAME_CIRCLECI} \
    --role roles/container.clusterAdmin
-
-# TODO 違うかも
-# gcloud iam service-accounts get-iam-policy ${SERVICE_ACCOUNT_NAME_CIRCLECI}
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+   --member serviceAccount:${SERVICE_ACCOUNT_NAME_CIRCLECI} \
+   --role roles/container.admin
 
 # TODO 必要になったら
 # iam create application
@@ -43,6 +43,6 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 #SERVICE_ACCOUNT_NAME_APP=${IAM_NAME_APP}@${PROJECT_ID}.iam.gserviceaccount.com
 #gcloud iam service-accounts create ${IAM_NAME_APP} --display-name=${IAM_NAME_APP} 2>&1
 
-#gcloud iam service-accounts get-iam-policy ${SERVICE_ACCOUNT_NAME_APP}
+gcloud projects get-iam-policy ${PROJECT_ID}
 
 popd > /dev/null
