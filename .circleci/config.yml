@@ -25,6 +25,7 @@ jobs:
       # CircleCIにて
       # APP_NAME: ""
       # PROJECT_ID: ""
+      # CLUSTER_NAME: ""
       # CLOUDSDK_COMPUTE_ZONE: ""
       # CLOUDSDK_COMPUTE_REGION: ""
       # GCLOUD_SERVICE_KEY_ENCODED: ""
