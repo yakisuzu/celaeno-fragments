@@ -1,19 +1,23 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celaeno-fragments-deployment
   labels:
-    app: celaeno-fragments-deployment
+    app: label
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: celaeno-fragments-pod
+      app: label
   template:
     metadata:
       labels:
-        app: celaeno-fragments-pod
+        app: label
     spec:
+      imagePullSecrets:
+        - name: gcr-secret
       containers:
         - name: celaeno-fragments-container
-          image: asia.gcr.io/celaeno-fragments/celaeno-fragments-app:latest
+          imagePullPolicy: Always
+          image: app:latest

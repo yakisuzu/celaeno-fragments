@@ -18,7 +18,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - ops/app
+            - ops
   gke_deploy:
     # https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=ja
     environment:
@@ -43,18 +43,36 @@ jobs:
             gcloud config set project ${PROJECT_ID}
             gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
             gcloud config set compute/region ${CLOUDSDK_COMPUTE_REGION}
-            echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 --decode -i | gcloud auth activate-service-account --key-file=-
+            echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 -di | gcloud auth activate-service-account --key-file=-
             gcloud config configurations list
             gcloud auth configure-docker --quiet
       - run:
+          name: kubectl setup
+          command: |
+            gcloud container clusters get-credentials ${CLUSTER_NAME}
+      - run:
+          name: kustomize setup
+          command: |
+            curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest |\
+              grep browser_download |\
+              grep linux |\
+              cut -d '"' -f 4 |\
+              xargs curl -O -L
+            mv kustomize_*_linux_amd64 /usr/local/bin/kustomize
+            chmod u+x /usr/local/bin/kustomize
+      - run:
           name: docker build
-          command: docker build -t asia.gcr.io/${PROJECT_ID}/${APP_NAME}:latest ops/app
+          command: docker build -t asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1} ops/app
       - run:
           name: gcr push
-          command: docker push asia.gcr.io/${PROJECT_ID}/${APP_NAME}:latest
+          command: docker push asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
       - run:
           name: gke releasse
-          command: echo TODO
+          command: |
+            cd ops/k8s/overlays/production
+            kustomize edit set image app=asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
+            kubectl kustomize .
+            kubectl apply -k .
 workflows:
   version: 2
   build_and_deploy:

@@ -19,14 +19,6 @@ gcloud config configurations list
 
 echo "コメントアウトして使う" && popd > /dev/null && exit 0
 
-# kubectl setup
-# gcloud container clusters get-credentials ${CLUSTER_NAME}
-
-# local gcr credential setup
-# gcloud components install docker-credential-gcr --quiet
-# docker-credential-gcr configure-docker
-# https://cloud.google.com/container-registry/docs/access-control
-
 # disable cluster
 #gcloud container clusters resize "${CLUSTER_NAME}" --size=0 --quiet && popd > /dev/null && exit 0
 

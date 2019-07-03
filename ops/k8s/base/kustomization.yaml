@@ -1,0 +1,4 @@
+commonLabels:
+  app: celaeno-fragments-app
+resources:
+  - deployment.yaml
