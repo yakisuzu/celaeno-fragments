@@ -1,30 +1,19 @@
 #!/bin/sh
-pushd $(dirname `greadlink -f $0`) > /dev/null
 
-PROJECT_ID="$1"
-CLOUDSDK_COMPUTE_ZONE="asia-southeast1-a"
-CLOUDSDK_COMPUTE_REGION="asia-southeast1"
-CLUSTER_NAME="$2"
-[ "${PROJECT_ID}" == "" ] && echo "Require. PROJECT_ID" && popd > /dev/null && exit 1
-[ "${CLUSTER_NAME}" == "" ] && echo "Require. CLUSTER_NAME" && popd > /dev/null && exit 1
+GCP_PROJECT_ID="$1"
+GCP_REGION="$2"
+GCP_CLUSTER_NAME="$3"
+[ "${GCP_PROJECT_ID}" == "" ] && echo "Require. GCP_PROJECT_ID" && exit 1
+[ "${GCP_REGION}" == "" ] && echo "Require. GCP_REGION" && exit 1
+[ "${GCP_CLUSTER_NAME}" == "" ] && echo "Require. GCP_CLUSTER_NAME" && exit 1
 
 CLUSTER_VERSION="1.13.6-gke.13"
 MACHINE_TYPE="g1-small"
 NUM_NODES=1
 
-# clusterは超権限でつくる
-. ./gke_config_setup.sh ${PROJECT_ID} ${CLOUDSDK_COMPUTE_ZONE} ${CLOUDSDK_COMPUTE_REGION} ${CLUSTER_NAME}
-gcloud auth login
-gcloud config configurations list
-
-echo "コメントアウトして使う" && popd > /dev/null && exit 0
-
-# disable cluster
-#gcloud container clusters resize "${CLUSTER_NAME}" --size=0 --quiet && popd > /dev/null && exit 0
-
 # create cluster
 gcloud config set container/new_scopes_behavior true
-gcloud container clusters create "${CLUSTER_NAME}" \
+gcloud container clusters create "${GCP_CLUSTER_NAME}" \
   --no-enable-basic-auth \
   --cluster-version "${CLUSTER_VERSION}" \
   --machine-type "${MACHINE_TYPE}" \
@@ -37,12 +26,10 @@ gcloud container clusters create "${CLUSTER_NAME}" \
   --enable-cloud-logging \
   --enable-cloud-monitoring \
   --enable-ip-alias \
-  --network "projects/${PROJECT_ID}/global/networks/default" \
-  --subnetwork "projects/${PROJECT_ID}/regions/${CLOUDSDK_COMPUTE_REGION}/subnetworks/default" \
+  --network "projects/${GCP_PROJECT_ID}/global/networks/default" \
+  --subnetwork "projects/${GCP_PROJECT_ID}/regions/${GCP_REGION}/subnetworks/default" \
   --max-nodes-per-pool "100" \
   --addons HorizontalPodAutoscaling,HttpLoadBalancing \
   --no-issue-client-certificate \
   --enable-autoupgrade \
   --enable-autorepair
-
-popd > /dev/null

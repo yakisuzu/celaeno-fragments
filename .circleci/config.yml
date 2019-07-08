@@ -72,7 +72,6 @@ jobs:
           command: |
             cd ops/k8s/overlays/production
             kustomize edit set image app=asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
-            kustomize build .
             kustomize build . | kubectl apply -f -
 workflows:
   version: 2
