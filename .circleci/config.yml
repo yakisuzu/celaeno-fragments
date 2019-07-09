@@ -7,7 +7,7 @@ jobs:
       - checkout
       - restore_cache:
           key: sbt-cache
-      - run: sbt update clean scalafmt test assembly
+      - run: make jar
       - save_cache:
           key: sbt-cache
           paths:
