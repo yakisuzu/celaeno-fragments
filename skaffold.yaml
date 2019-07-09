@@ -1,0 +1,15 @@
+apiVersion: skaffold/v1beta12
+kind: Config
+build:
+  artifacts:
+    - image: celaeno-fragments-app
+      context: ops/app/
+  tagPolicy:
+    dateTime:
+      format: "20060102_150405"
+      timezone: "Local"
+  local:
+    useBuildkit: true
+deploy:
+  kustomize:
+    path: ops/k8s/overlays/local
