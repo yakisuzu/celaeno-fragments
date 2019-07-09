@@ -6,4 +6,3 @@ patchesStrategicMerge:
 - deployment.yaml
 images:
 - name: app
-  newName: app
