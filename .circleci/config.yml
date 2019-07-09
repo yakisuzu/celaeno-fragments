@@ -70,9 +70,8 @@ jobs:
       - run:
           name: gke releasse
           command: |
-            cd ops/k8s/overlays/production
-            kustomize edit set image app=asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
-            kustomize build . | kubectl apply -f -
+            ./ops/k8s/overlays/production/build.sh "asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}"
+            kubectl apply -f ./ops/k8s/manifest/prd-k8s.yaml
 workflows:
   version: 2
   build_and_deploy:

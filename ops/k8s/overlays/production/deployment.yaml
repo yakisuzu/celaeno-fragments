@@ -4,9 +4,10 @@ kind: Deployment
 metadata:
   name: celaeno-fragments-deployment
 spec:
-  replicas: 1
   template:
     spec:
+      imagePullSecrets:
+        - name: gcr-secret
       containers:
         - name: celaeno-fragments-container
-          image: app:latest
+          imagePullPolicy: Always
