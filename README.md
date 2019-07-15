@@ -19,9 +19,14 @@
 
 # devメモ
 ## build
-sbt update clean scalafmt test assembly
+`make compile`
+`make jar`
 
-## gcloud reference
+## local deploy
+`make run-skaffold`
+
+# reference
+## gcloud
 https://cloud.google.com/sdk/gcloud/reference/
 
 ## kubernetes customize
@@ -29,7 +34,9 @@ https://blog.stack-labs.com/code/kustomize-101/
 https://github.com/kubernetes-sigs/kustomize
 https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
 
-## kubernetes deploy
-cd ops/k8s/overlays/production
-kustomize edit set image app=asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
-kustomize build . | kubectl apply -f -
+## Custom Search API
+https://console.cloud.google.com/apis/api/customsearch.googleapis.com/overview
+https://cse.google.com/
+https://developers.google.com/custom-search/v1/?hl=ja
+https://developers.google.com/custom-search/v1/introduction?hl=ja#identify_your_application_to_google_with_api_key
+https://developers.google.com/api-client-library/java/apis/customsearch/v1
