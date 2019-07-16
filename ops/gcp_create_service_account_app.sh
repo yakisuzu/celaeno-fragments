@@ -15,9 +15,4 @@ GCP_ACCOUNT_NAME="$2"
 GCP_ACCOUNT_MAIL=${GCP_ACCOUNT_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com
 gcloud iam service-accounts create ${GCP_ACCOUNT_NAME} --display-name=${GCP_ACCOUNT_NAME} 2>&1
 
-# TODO cse
-#gcloud projects add-iam-policy-binding ${GCP_PROJECT_ID} \
-#   --member serviceAccount:${GCP_ACCOUNT_MAIL} \
-#   --role roles/storage.admin
-
 gcloud projects get-iam-policy ${GCP_PROJECT_ID}
