@@ -7,7 +7,7 @@ GCP_ACCOUNT_KEY="$3" # encoded service key
 [ "${GCP_ACCOUNT_NAME}" == "" ] && echo "Require. GCP_ACCOUNT_NAME" && exit 1
 [ "${GCP_ACCOUNT_KEY}" == "" ] && echo "Require. GCP_ACCOUNT_KEY" && exit 1
 
-# create gcr secret
+# create secret gcr
 GCP_ACCOUNT_MAIL="${GCP_ACCOUNT_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
 kubectl create secret docker-registry gcr-secret \
   --docker-server="https://asia.gcr.io" \
