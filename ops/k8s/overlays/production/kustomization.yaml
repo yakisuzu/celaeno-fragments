@@ -4,5 +4,10 @@ resources:
 - ../../base
 patchesStrategicMerge:
 - deployment.yaml
+secretGenerator:
+- files:
+  - .env
+  name: cse-key
+  type: Opaque
 images:
 - name: app

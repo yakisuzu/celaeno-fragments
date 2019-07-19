@@ -7,6 +7,10 @@ spec:
   replicas: 1
   template:
     spec:
+      volumes:
+        - name: application-gcp-secret
+          secret:
+            secretName: application-gcp-secret
       containers:
         - name: celaeno-fragments-container
           image: app:latest
