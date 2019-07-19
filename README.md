@@ -37,7 +37,7 @@ https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-clou
 
 ## kubernetes customize
 https://blog.stack-labs.com/code/kustomize-101/
-https://github.com/kubernetes-sigs/kustomize
+https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md
 https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
 
 ## Custom Search API
