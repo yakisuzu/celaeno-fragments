@@ -23,12 +23,14 @@ jobs:
     # https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=ja
     environment:
       # CircleCIにて
-      # APP_NAME: ""
-      # PROJECT_ID: ""
-      # CLUSTER_NAME: ""
-      # CLOUDSDK_COMPUTE_ZONE: ""
-      # CLOUDSDK_COMPUTE_REGION: ""
-      # GCLOUD_SERVICE_KEY_ENCODED: ""
+      # GCP_APP_NAME
+      # GCP_PROJECT_ID
+      # GCP_CLUSTER_NAME
+      # GCP_ZONE
+      # GCP_REGION
+      # GCP_SERVICE_KEY_ENCODED
+      # CSE_API
+      # CSE_CX
     docker:
       - image: google/cloud-sdk:latest
     steps:
@@ -39,18 +41,18 @@ jobs:
       - run:
           name: gcloud setup
           command: |
-            gcloud config configurations create ${PROJECT_ID} 2> /dev/null
-            gcloud config configurations activate ${PROJECT_ID}
-            gcloud config set project ${PROJECT_ID}
-            gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
-            gcloud config set compute/region ${CLOUDSDK_COMPUTE_REGION}
-            echo ${GCLOUD_SERVICE_KEY_ENCODED} | base64 -di | gcloud auth activate-service-account --key-file=-
+            gcloud config configurations create ${GCP_PROJECT_ID} 2> /dev/null
+            gcloud config configurations activate ${GCP_PROJECT_ID}
+            gcloud config set project ${GCP_PROJECT_ID}
+            gcloud config set compute/zone ${GCP_ZONE}
+            gcloud config set compute/region ${GCP_REGION}
+            echo ${GCP_SERVICE_KEY_ENCODED} | base64 -di | gcloud auth activate-service-account --key-file=-
             gcloud config configurations list
             gcloud auth configure-docker --quiet
       - run:
           name: kubectl setup
           command: |
-            gcloud container clusters get-credentials ${CLUSTER_NAME}
+            gcloud container clusters get-credentials ${GCP_CLUSTER_NAME}
       - run:
           name: kustomize setup
           command: |
@@ -63,14 +65,14 @@ jobs:
             chmod u+x /usr/local/bin/kustomize
       - run:
           name: docker build
-          command: docker build -t asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1} ops/app
+          command: docker build -t asia.gcr.io/${GCP_PROJECT_ID}/${GCP_APP_NAME}:${CIRCLE_SHA1} ops/app
       - run:
           name: gcr push
-          command: docker push asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}
+          command: docker push asia.gcr.io/${GCP_PROJECT_ID}/${GCP_APP_NAME}:${CIRCLE_SHA1}
       - run:
           name: gke releasse
           command: |
-            ./ops/k8s/overlays/production/build.sh "asia.gcr.io/${PROJECT_ID}/${APP_NAME}:${CIRCLE_SHA1}"
+            ./ops/k8s/overlays/production/build.sh "${CSE_API}" "${CSE_CX}" "asia.gcr.io/${GCP_PROJECT_ID}/${GCP_APP_NAME}:${CIRCLE_SHA1}"
             kubectl apply -f ./ops/k8s/manifest/prd-k8s.yaml
 workflows:
   version: 2
