@@ -10,10 +10,11 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "ch.qos.logback"   % "logback-classic" % "1.2.3",
-  "com.typesafe"     % "config"          % "1.3.4",
-  "com.ullink.slack" % "simpleslackapi"  % "1.2.0",
-  "org.scalatest"    % "scalatest_2.12"  % "3.0.5" % "test"
+  "ch.qos.logback"   % "logback-classic"                  % "1.2.3",
+  "com.google.apis"  % "google-api-services-customsearch" % "v1-rev74-1.25.0",
+  "com.typesafe"     % "config"                           % "1.3.4",
+  "com.ullink.slack" % "simpleslackapi"                   % "1.2.0",
+  "org.scalatest"    % "scalatest_2.12"                   % "3.0.5" % "test"
 )
 
 assemblyOutputPath in assembly := file(s"ops/app/${name.value}.jar")

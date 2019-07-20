@@ -36,9 +36,10 @@ https://cloud.google.com/kubernetes-engine/docs/concepts/access-control?hl=ja
 https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform?hl=ja
 
 ## kubernetes customize
-https://blog.stack-labs.com/code/kustomize-101/
+https://kubectl.docs.kubernetes.io/pages/reference/kustomize.html
 https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md
 https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+https://blog.stack-labs.com/code/kustomize-101/
 
 ## Custom Search API
 https://developers.google.com/custom-search/v1/?hl=ja

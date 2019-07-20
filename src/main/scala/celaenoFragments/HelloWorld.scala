@@ -1,11 +1,16 @@
 package celaenoFragments
 
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object HelloWorld extends App with LazyLogging {
+  lazy val conf: Config   = ConfigFactory.load()
+  lazy val cseApi: String = conf.getString("app.cse.api")
+  lazy val cseCx: String  = conf.getString("app.cse.cx")
+
   /*
   scala.util.Properties.envOrElse("TWITTER_CONSUMER_TOKEN_KEY", "fuck")
   scala.util.Properties.envOrElse("TWITTER_CONSUMER_TOKEN_SECRET","fuck")
