@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
 - ../../base
 secretGenerator:
-- files:
+- name: cse-key
+  envs:
   - .env
-  name: cse-key
   type: Opaque
 images:
 - name: app

@@ -14,3 +14,14 @@ spec:
       containers:
         - name: celaeno-fragments-container
           image: app:latest
+          env:
+            - name: CSE_API
+              valueFrom:
+                secretKeyRef:
+                  name: cse-key
+                  key: CSE_API
+            - name: CSE_CX
+              valueFrom:
+                secretKeyRef:
+                  name: cse-key
+                  key: CSE_CX
