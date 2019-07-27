@@ -56,6 +56,9 @@ https://console.developers.google.com/apis/credentials
 APIの制限にCustomSearchAPIをつける
 `curl "https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${API_CX}&q=${API_QUERY}" > res.json`
 
+## Sudachi
+https://github.com/WorksApplications/Sudachi
+
 
 # sdk
 ## customsearch

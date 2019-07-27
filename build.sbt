@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "com.google.apis"  % "google-api-services-customsearch" % "v1-rev74-1.25.0",
   "com.typesafe"     % "config"                           % "1.3.4",
   "com.ullink.slack" % "simpleslackapi"                   % "1.2.0",
+  "com.worksap.nlp"  % "sudachi"                          % "0.3.0",
   "org.scalatest"    % "scalatest_2.12"                   % "3.0.5" % "test"
 )
 
