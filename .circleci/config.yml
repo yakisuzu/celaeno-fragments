@@ -66,6 +66,7 @@ jobs:
       - run:
           name: sudachi setup
           command: |
+            apt-get install -y unzip
             curl -O https://object-storage.tyo2.conoha.io/v1/nc_2520839e1f9641b08211a5c85243124a/sudachi/sudachi-dictionary-20190718-core.zip
             unzip sudachi-dictionary-20190718-core.zip
             mv sudachi-dictionary-20190718/system_core.dic ops/app/
