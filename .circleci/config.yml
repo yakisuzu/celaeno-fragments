@@ -64,6 +64,12 @@ jobs:
             mv kustomize_*_linux_amd64 /usr/local/bin/kustomize
             chmod u+x /usr/local/bin/kustomize
       - run:
+          name: sudachi setup
+          command: |
+            curl -O https://object-storage.tyo2.conoha.io/v1/nc_2520839e1f9641b08211a5c85243124a/sudachi/sudachi-dictionary-20190718-core.zip
+            unzip sudachi-dictionary-20190718-core.zip
+            mv sudachi-dictionary-20190718/system_core.dic ops/app/
+      - run:
           name: docker build
           command: docker build -t asia.gcr.io/${GCP_PROJECT_ID}/${GCP_APP_NAME}:${CIRCLE_SHA1} ops/app
       - run:
