@@ -6,5 +6,6 @@ RUN apk add --update --no-cache \
   && echo "Asia/Tokyo" > /etc/timezone \
   && apk del tzdata
 
-COPY celaeno-fragments.jar .
+ADD celaeno-fragments.jar .
+ADD system_core.dic .
 CMD ["java", "-jar", "celaeno-fragments.jar"]

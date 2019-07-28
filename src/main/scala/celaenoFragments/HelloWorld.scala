@@ -2,13 +2,16 @@ package celaenoFragments
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.customsearch.model.Result
 import com.google.api.services.customsearch.{Customsearch, CustomsearchRequestInitializer}
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
+import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Morpheme, Tokenizer}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.util.Try
 
 object HelloWorld extends App with LazyLogging {
   lazy val conf: Config    = ConfigFactory.load()
@@ -16,6 +19,7 @@ object HelloWorld extends App with LazyLogging {
   lazy val cseApi: String  = conf.getString("app.cse.api")
   lazy val cseCx: String   = conf.getString("app.cse.cx")
 
+  // twitter
   /*
   scala.util.Properties.envOrElse("TWITTER_CONSUMER_TOKEN_KEY", "fuck")
   scala.util.Properties.envOrElse("TWITTER_CONSUMER_TOKEN_SECRET","fuck")
@@ -48,6 +52,7 @@ object HelloWorld extends App with LazyLogging {
     trends.foreach(trend => trend.trends.foreach(t => logger.info(t.name)))
   }(global)
 
+  // CSE
   lazy val cseClient = new Customsearch.Builder(
     GoogleNetHttpTransport.newTrustedTransport(),
     JacksonFactory.getDefaultInstance,
@@ -57,10 +62,19 @@ object HelloWorld extends App with LazyLogging {
     .build()
     .cse()
 
-  val results = cseClient.list("cars").setCx(cseCx).execute().getItems.asScala
-  results.foreach { r =>
-    logger.info(r.toString)
+  case class CseResultEntity(url: String, title: String, snippet: String)
+  lazy val cseResults: Seq[Result]      = cseClient.list("リスグラシュー").setCx(cseCx).execute().getItems.asScala
+  val cseEntities: Seq[CseResultEntity] = cseResults.map(r => CseResultEntity(r.getFormattedUrl, r.getTitle, r.getSnippet))
+
+  // Sudachi
+  // TODO dicを/src/main/resourcesにおく
+  val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
+  val tokenizer: Tokenizer  = dict.get.create()
+  val ms = cseEntities.flatMap { e =>
+    val morphemes: Seq[Morpheme] = tokenizer.tokenize(Tokenizer.SplitMode.C, e.snippet).asScala
+    morphemes
   }
+  ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
 
   // TODO 本来は終了しないけど、処理ができるまでいったんsleepし続けるように
   Thread.sleep(24.hours.toMillis)

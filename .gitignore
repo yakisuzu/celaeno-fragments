@@ -1,6 +1,7 @@
 *.class
 *.log
 *.jar
+*.dic
 
 # sbt specific
 .cache/
