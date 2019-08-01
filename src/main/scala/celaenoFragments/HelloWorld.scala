@@ -11,6 +11,7 @@ import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Morpheme, Tokeniz
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 object HelloWorld extends App with LazyLogging {
@@ -47,10 +48,8 @@ object HelloWorld extends App with LazyLogging {
     )
   )
 
-  trends.map { ratedData =>
-    val trends = ratedData.data
-    trends.foreach(trend => trend.trends.foreach(t => logger.info(t.name)))
-  }(global)
+  val trendNamesF: Future[Seq[String]] = trends.map(_.data.flatMap(_.trends.map(_.name)))(global)
+  val trendNames: Seq[String]          = Await.result(trendNamesF, Duration.Inf)
 
   // CSE
   lazy val cseClient = new Customsearch.Builder(
@@ -62,15 +61,17 @@ object HelloWorld extends App with LazyLogging {
     .build()
     .cse()
 
-  case class CseResultEntity(url: String, title: String, snippet: String)
-  lazy val cseResults: Seq[Result]      = cseClient.list("リスグラシュー").setCx(cseCx).execute().getItems.asScala
-  val cseEntities: Seq[CseResultEntity] = cseResults.map(r => CseResultEntity(r.getFormattedUrl, r.getTitle, r.getSnippet))
+  case class CseResultsEntity(trendName: String, snippets: Seq[String])
+  val cseEntities: Seq[CseResultsEntity] = trendNames.map { trendName: String =>
+    val cseResults: Seq[Result] = cseClient.list(trendName).setCx(cseCx).execute().getItems.asScala
+    CseResultsEntity(trendName, cseResults.map(_.getSnippet))
+  }
 
   // Sudachi
   val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
   val tokenizer: Tokenizer  = dict.get.create()
   val ms = cseEntities.flatMap { e =>
-    val morphemes: Seq[Morpheme] = tokenizer.tokenize(Tokenizer.SplitMode.C, e.snippet).asScala
+    val morphemes: Seq[Morpheme] = e.snippets.flatMap(s => tokenizer.tokenize(Tokenizer.SplitMode.C, s).asScala)
     morphemes
   }
   ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
