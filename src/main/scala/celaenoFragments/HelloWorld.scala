@@ -67,7 +67,6 @@ object HelloWorld extends App with LazyLogging {
   val cseEntities: Seq[CseResultEntity] = cseResults.map(r => CseResultEntity(r.getFormattedUrl, r.getTitle, r.getSnippet))
 
   // Sudachi
-  // TODO dicを/src/main/resourcesにおく
   val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
   val tokenizer: Tokenizer  = dict.get.create()
   val ms = cseEntities.flatMap { e =>
