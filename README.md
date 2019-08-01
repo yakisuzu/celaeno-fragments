@@ -59,6 +59,11 @@ APIの制限にCustomSearchAPIをつける
 ## Sudachi
 https://github.com/WorksApplications/Sudachi  
 
+### dictionary
+https://object-storage.tyo2.conoha.io/v1/nc_2520839e1f9641b08211a5c85243124a/sudachi/sudachi-dictionary-20190718-core.zip  
+- /system_core.dic  
+- /ops/app/system_core.dic  
+
 
 # sdk
 ## customsearch
