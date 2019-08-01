@@ -68,6 +68,8 @@ object HelloWorld extends App with LazyLogging {
   }
 
   // Sudachi
+  case class MorphemeEntity(surface: String, count: Int)
+  case class SudachiResultsEntity(trendName: String, morphemes: Seq[MorphemeEntity])
   val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
   val tokenizer: Tokenizer  = dict.get.create()
   val ms = cseEntities.flatMap { e =>
