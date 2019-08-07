@@ -6,6 +6,8 @@ import com.google.api.services.customsearch.model.Result
 import com.google.api.services.customsearch.{Customsearch, CustomsearchRequestInitializer}
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
+import com.ullink.slack.simpleslackapi.SlackSession
+import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
 import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Morpheme, Tokenizer}
 
 import scala.collection.JavaConverters._
@@ -15,10 +17,11 @@ import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 object HelloWorld extends App with LazyLogging {
-  lazy val conf: Config    = ConfigFactory.load()
-  lazy val cseName: String = conf.getString("app.cse.name")
-  lazy val cseApi: String  = conf.getString("app.cse.api")
-  lazy val cseCx: String   = conf.getString("app.cse.cx")
+  lazy val conf: Config       = ConfigFactory.load()
+  lazy val cseName: String    = conf.getString("app.cse.name")
+  lazy val cseApi: String     = conf.getString("app.cse.api")
+  lazy val cseCx: String      = conf.getString("app.cse.cx")
+  lazy val slackToken: String = conf.getString("app.slack.token")
 
   // twitter
   /*
@@ -77,6 +80,11 @@ object HelloWorld extends App with LazyLogging {
     morphemes
   }
   ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
+
+  // slack
+  lazy val session: SlackSession = SlackSessionFactory.getSlackSessionBuilder(slackToken).build()
+//  val channel: SlackChannel
+//  session.sendMessage(channel, "")
 
   // TODO 本来は終了しないけど、処理ができるまでいったんsleepし続けるように
   Thread.sleep(24.hours.toMillis)
