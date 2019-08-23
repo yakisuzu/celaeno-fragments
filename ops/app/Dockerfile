@@ -7,5 +7,5 @@ RUN apk add --update --no-cache \
   && apk del tzdata
 
 ADD celaeno-fragments.jar .
-ADD system_core.dic .
+ADD system_full.dic .
 CMD ["java", "-jar", "celaeno-fragments.jar"]
