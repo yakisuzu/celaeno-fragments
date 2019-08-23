@@ -8,7 +8,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
-import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Tokenizer}
+import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Morpheme, Tokenizer}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,7 +52,10 @@ object HelloWorld extends App with LazyLogging {
   )
 
   val trendNamesF: Future[Seq[String]] = trends.map(_.data.flatMap(_.trends.map(_.name)))(global)
-  val trendNames: Seq[String]          = Await.result(trendNamesF, Duration.Inf)
+  // hashタグは気にしない
+  val trendNames: Seq[String] = Await
+    .result(trendNamesF, Duration.Inf)
+    .filter(_.head != '#')
 
   // CSE
   lazy val cseClient = new Customsearch.Builder(
@@ -76,16 +79,30 @@ object HelloWorld extends App with LazyLogging {
   val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
   val tokenizer: Tokenizer  = dict.get.create()
   val sudachiEntities: Seq[SudachiResultsEntity] = cseEntities.map { entity: CseResultsEntity =>
-    val ms: Seq[MorphemeEntity] = entity.snippets
+    // 品詞を元に表示する単語を選ぶ
+    val bases: Seq[Morpheme] = entity.snippets
       .flatMap(tokenizer.tokenize(Tokenizer.SplitMode.C, _).asScala)
+      // 名詞, 動詞 だけでよくない？
+      // 接尾辞, 接頭辞 いる？
+      // 空白, 助詞, 助動詞, 補助記号 いらない
+      .filter(m => Seq("名詞", "動詞").contains(m.partOfSpeech().asScala.head))
+
+    bases.foreach { base =>
+      logger.info(s"${base.surface}/${base.partOfSpeech.asScala.mkString(",")}/${base.normalizedForm}")
+    }
+
+    val ms: Seq[MorphemeEntity] = bases
       .groupBy(_.normalizedForm)
       .toSeq
       .map(t => MorphemeEntity(t._1, t._2.length))
       .sortWith(_.count > _.count)
-      .take(10)
+      .take(20)
     SudachiResultsEntity(entity.trendName, ms)
   }
-  //  ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
+
+  sudachiEntities.foreach { e =>
+    logger.info(s"${e.trendName} => ${e.morphemes.map(_.normalizedForm).mkString(", ")}")
+  }
 
   // slack
   lazy val session: SlackSession = SlackSessionFactory.getSlackSessionBuilder(slackToken).build()
