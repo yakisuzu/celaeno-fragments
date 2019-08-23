@@ -17,11 +17,13 @@ import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 object HelloWorld extends App with LazyLogging {
-  lazy val conf: Config       = ConfigFactory.load()
-  lazy val cseName: String    = conf.getString("app.cse.name")
-  lazy val cseApi: String     = conf.getString("app.cse.api")
-  lazy val cseCx: String      = conf.getString("app.cse.cx")
-  lazy val slackToken: String = conf.getString("app.slack.token")
+  lazy val conf: Config          = ConfigFactory.load()
+  lazy val cseName: String       = conf.getString("app.cse.name")
+  lazy val cseApi: String        = conf.getString("app.cse.api")
+  lazy val cseCx: String         = conf.getString("app.cse.cx")
+  lazy val sudachiPath: String   = conf.getString("app.sudachi.path")
+  lazy val sudachiConfig: String = conf.getString("app.sudachi.config")
+  lazy val slackToken: String    = conf.getString("app.slack.token")
 
   // twitter
   /*
@@ -76,7 +78,7 @@ object HelloWorld extends App with LazyLogging {
   // Sudachi
   case class MorphemeEntity(normalizedForm: String, count: Int)
   case class SudachiResultsEntity(trendName: String, morphemes: Seq[MorphemeEntity])
-  val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
+  val dict: Try[Dictionary] = Try(new DictionaryFactory().create(sudachiPath, sudachiConfig, true))
   val tokenizer: Tokenizer  = dict.get.create()
   val sudachiEntities: Seq[SudachiResultsEntity] = cseEntities.map { entity: CseResultsEntity =>
     // 品詞を元に表示する単語を選ぶ
