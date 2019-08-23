@@ -8,7 +8,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import com.ullink.slack.simpleslackapi.SlackSession
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory
-import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Morpheme, Tokenizer}
+import com.worksap.nlp.sudachi.{Dictionary, DictionaryFactory, Tokenizer}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -71,15 +71,21 @@ object HelloWorld extends App with LazyLogging {
   }
 
   // Sudachi
-  case class MorphemeEntity(surface: String, count: Int)
+  case class MorphemeEntity(normalizedForm: String, count: Int)
   case class SudachiResultsEntity(trendName: String, morphemes: Seq[MorphemeEntity])
   val dict: Try[Dictionary] = Try(new DictionaryFactory().create(null, null, false))
   val tokenizer: Tokenizer  = dict.get.create()
-  val ms = cseEntities.flatMap { e =>
-    val morphemes: Seq[Morpheme] = e.snippets.flatMap(s => tokenizer.tokenize(Tokenizer.SplitMode.C, s).asScala)
-    morphemes
+  val sudachiEntities: Seq[SudachiResultsEntity] = cseEntities.map { entity: CseResultsEntity =>
+    val ms: Seq[MorphemeEntity] = entity.snippets
+      .flatMap(tokenizer.tokenize(Tokenizer.SplitMode.C, _).asScala)
+      .groupBy(_.normalizedForm)
+      .toSeq
+      .map(t => MorphemeEntity(t._1, t._2.length))
+      .sortWith(_.count > _.count)
+      .take(10)
+    SudachiResultsEntity(entity.trendName, ms)
   }
-  ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
+  //  ms.foreach(m => logger.info(s"${m.surface}/${m.partOfSpeech.asScala.mkString(",")}/${m.normalizedForm}"))
 
   // slack
   lazy val session: SlackSession = SlackSessionFactory.getSlackSessionBuilder(slackToken).build()
