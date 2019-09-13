@@ -38,26 +38,10 @@ object HelloWorld extends App with LazyLogging {
     trends.foreach(trend => println(trend.trends))
   }
    */
-  val trends = trendsMock(
-    Seq(
-      "SOS団",
-      "#鉄腕DASH",
-      "#モヤさま",
-      "#パワスプ",
-      "#たと打ってタピオカが出てきたら陽キャ",
-      "リスグラシュー",
-      "ハルヒ",
-      "キセキ",
-      "#ダーウィンが来た",
-      "交流戦優勝"
-    )
-  )
+  val trends: Future[TrendsEntity] = TrendsRepository()(global).fetchTrendNames()
 
-  val trendNamesF: Future[Seq[String]] = trends.map(_.data.flatMap(_.trends.map(_.name)))(global)
-  // hashタグは気にしない
-  val trendNames: Seq[String] = Await
-    .result(trendNamesF, Duration.Inf)
-    .filter(_.head != '#')
+  // TODO 全てFutureで最後にアグリケート
+  val trendsW: TrendsEntity = Await.result(trends, Duration.Inf)
 
   // CSE
   lazy val cseClient = new Customsearch.Builder(
@@ -70,7 +54,7 @@ object HelloWorld extends App with LazyLogging {
     .cse()
 
   case class CseResultsEntity(trendName: String, snippets: Seq[String])
-  val cseEntities: Seq[CseResultsEntity] = trendNames.map { trendName: String =>
+  val cseEntities: Seq[CseResultsEntity] = trendsW.ignoreHashTagTrends().map { trendName: String =>
     val cseResults: Seq[Result] = cseClient.list(trendName).setCx(cseCx).execute().getItems.asScala
     CseResultsEntity(trendName, cseResults.map(_.getSnippet))
   }
